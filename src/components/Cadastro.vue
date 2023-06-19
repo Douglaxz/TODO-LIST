@@ -1,6 +1,6 @@
 <template>
   <div
-    class="d-flex flex-column flex-md-row rounded-xl justify-center rounded-xl overflow-hidden"
+    class="d-flex flex-column flex-md-row rounded-xl justify-center rounded-xl overflow-hidden ma-1"
     :class="geralClassCss"
     style="border-width: 2px; border-color: black; border-style: solid"
   >

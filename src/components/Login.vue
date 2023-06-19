@@ -13,7 +13,7 @@
         Informe seu dados para login ou clique em Cadastro
       </p>
       <div
-        class="iconeCirculo bg-white d-flex align-center justify-center"
+        class="bg-white d-flex align-center justify-center"
         style="width: 170px; height: 170px; border-radius: 50%"
       >
         <span
