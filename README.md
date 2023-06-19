@@ -1,57 +1,36 @@
-# base
+# Projeto Todo List - Front-end
 
-## Project setup
+Este é o repositório do projeto de front-end do sistema Todo List. O sistema foi desenvolvido utilizando o framework Vue.js e o framework de componentes Vuetify, permitindo que os usuários gerenciem suas listas de tarefas.
 
-```
-# yarn
-yarn
+## Funcionalidades
+- Login: Os usuários podem fazer login em suas contas usando suas credenciais.
+- Cadastro: Os usuários podem se cadastrar para criar uma nova conta.
 
-# npm
-npm install
+## Tecnologias Utilizadas
+- Vue.js: Framework JavaScript para a construção de interfaces de usuário.
+- Vuetify: Framework de componentes Vue.js com design Material.
+- Vue Router: Biblioteca de roteamento para Vue.js.
 
-# pnpm
-pnpm install
-```
+# Instalação
+- Clone este repositório:
+`git clone https://github.com/Douglaxz/TODO-LIST.git`
 
-### Compiles and hot-reloads for development
+- Navegue até o diretório do projeto:
+`cd TODO-LIST`
 
-```
-# yarn
-yarn dev
+- Instale as dependências:
+`npm install`
 
-# npm
-npm run dev
+- Inicie o servidor de desenvolvimento:
+`npm run serve`
 
-# pnpm
-pnpm dev
-```
+- Acesse o projeto no seu navegador em `http://localhost:3000`.
 
-### Compiles and minifies for production
+# Estrutura do Projeto:
 
-```
-# yarn
-yarn build
+- src/components: Contém os componentes Vue.js utilizados no projeto, incluindo os componentes de login, cadastro e gerenciamento de tarefas.
+- src/router: Contém as configurações de rotas do Vue Router.
+- src/views: Contém as views do Vue.js, incluindo a tela de login e cadastro.
 
-# npm
-npm run build
-
-# pnpm
-pnpm build
-```
-
-### Lints and fixes files
-
-```
-# yarn
-yarn lint
-
-# npm
-npm run lint
-
-# pnpm
-pnpm lint
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://vitejs.dev/config/).
+# Contribuição
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues relatando problemas, sugerir melhorias ou enviar pull requests com novos recursos.
