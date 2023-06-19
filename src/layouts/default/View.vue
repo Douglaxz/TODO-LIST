@@ -1,5 +1,5 @@
 <template>
-  <v-main class="d-flex justify-center align-center ma-1">
+  <v-main class="d-flex justify-center align-center ma-2">
     <transition name="slide-x-transition" mode="out-in">
       <router-view />
     </transition>
