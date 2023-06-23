@@ -16,7 +16,13 @@ const routes = [
         path: "Cadastro",
         name: "Cadastro",
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/Cadastro.vue"),
+          import(/* webpackChunkName: "cadastro" */ "@/views/Cadastro.vue"),
+      },
+      {
+        path: "Dashboard",
+        name: "Dashboard",
+        component: () =>
+          import(/* webpackChunkName: "dashboard" */ "@/views/Dashboard.vue"),
       },
     ],
   },
