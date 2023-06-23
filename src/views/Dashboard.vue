@@ -4,12 +4,15 @@
     :class="geralClassCss"
     style="border-width: 2px; border-color: black; border-style: solid"
   >
+    <router-link to="/Addition">Add</router-link>
     <div
       class="d-flex flex-sm-column align-center justify-center justify-sm-space-evenly"
       :class="formularioClassCss"
     >
       <v-card v-for="list in toDoList" :key="list.id">
-        {{ list.title }}
+        <router-link :to="`/Details/${list.id}`">
+          <v-card-title>{{ list.title }}</v-card-title>
+        </router-link>
       </v-card>
     </div>
   </div>
