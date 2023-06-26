@@ -17,5 +17,9 @@ export const toDoListsApiMixin = {
       const res = await privateApi.delete(`lists/${id}`);
       return res;
     },
+    async uptItem(id, payload) {
+      const res = await privateApi.patch(`/lists/${id}` , payload);
+      return res;
+    },
   },
 };
