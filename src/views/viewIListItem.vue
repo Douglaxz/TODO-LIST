@@ -16,21 +16,30 @@
             <v-text-field
               v-model="title"
               label="Título do Item"
-              :rules="titleRules"
+              readonly
             ></v-text-field>
-        
-            <input type="datetime-local" :value="dateToISOString(myDate)" />
 
+            <input
+              type="datetime-local"
+              :value="dateToISOString(myDate)"
+              @input="myDate = new Date($event.target.value)"
+              readonly
+            />
+            <v-checkbox v-model="this.done" :label="`Finalizado?`"></v-checkbox>
             <v-btn
               color="grey-darken-2"
               type="submit"
               block
               class="mt-2"
               @click="handleSubmit"
-              >Adicionar</v-btn
+              >Atualizar</v-btn
             >
 
-            <v-btn type="back" block class="mt-2" :to="`/Details/${id}`"
+            <v-btn type="delete" block class="mt-2" @click="deleteItem"
+              >Deletar</v-btn
+            >
+
+            <v-btn type="back" block class="mt-2" :to="`/Details/${idPai}`"
               >Voltar</v-btn
             >
             <div></div>
@@ -48,36 +57,48 @@ export default {
   mixins: [toDoListsItemsApiMixin],
   data: () => ({
     title: "",
-    titleRules: [
-      (value) => {
-        if (!/^.+$/.test(value)) return "Campo Obrigatório";
-        if (/.[!#@().$%&]/.test(value))
-          return "O nome não deve conter caracteres.";
-        return true;
-      },
-    ],
-    myDate: new Date(),
+    myDate: "",
     id: null,
+    done: Boolean,
+    idPai: "",
   }),
+
+  created() {
+    this.id = this.$route.params.id;
+  },
 
   methods: {
     dateToISOString(date) {
       if (!date) return "";
-      return date.toISOString().slice(0, 16);
+
+      const adjustedDate = new Date(date);
+      adjustedDate.setHours(adjustedDate.getHours() - 3);
+
+      return adjustedDate.toISOString().slice(0, 16);
+    },
+
+    async getItemLists() {
+      try {
+        console.log(this.id);
+        const { data } = await this.viewListItem(this.id);
+        this.title = data.title;
+        this.myDate = new Date(data.deadline);
+        this.done = data.done;
+        this.idPai = data.listId;
+      } catch (err) {
+        alert("Algo deu errado na hora de puxar esse item list.");
+      }
     },
 
     async handleSubmit() {
       const payload = {
-        title: this.title,
-        deadline: this.myDate.toISOString(),
-        listId: this.id,
+        done: this.done,
       };
-      console.log(payload);
 
       try {
-        await this.uptListItem(payload);
+        await this.uptListItem(this.id, payload);
         alert("Item atualizado com sucesso!");
-        this.$router.push(`/Details/${this.id}`);
+        this.$router.push(`/Details/${this.idPai}`);
       } catch (err) {
         const status = err?.response?.status;
         if (status >= 500 && status < 600) {
@@ -87,6 +108,24 @@ export default {
         }
       }
     },
+
+    async deleteItem() {
+      try {
+        await this.delListItem(this.id);
+        alert("Item deletado com sucesso!");
+        this.$router.push(`/Details/${this.idPai}`);
+      } catch (err) {
+        const status = err?.response?.status;
+        if (status >= 500 && status < 600) {
+          alert("Ocorreu um erro no servidor! Tente novamente mais tarde.");
+        } else {
+          alert("Algo deu errado. Pedimos desculpas pelo inconveniente.");
+        }
+      }
+    },
+  },
+  mounted() {
+    this.getItemLists();
   },
 };
 </script>

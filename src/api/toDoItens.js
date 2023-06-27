@@ -10,7 +10,7 @@ export const toDoListsItemsApiMixin = {
       return res;
     },
     async viewListItem(id) {
-      const res = await privateApi.get(`/lists/${id}`);
+      const res = await privateApi.get(`/items/${id}`);
       return res;
     },
     async delListItem(id) {

@@ -19,7 +19,7 @@
               :rules="titleRules"
             ></v-text-field>
 
-            <input type="datetime-local" :value="dateToISOString(myDate)" />
+            <input type="datetime-local" :value="dateToISOString(myDate)"  />
 
             <v-btn
               color="grey-darken-2"

@@ -94,7 +94,7 @@ export default {
         alert("Algo deu errado na hora de deletar.");
       }
     },
-    async uptListItem() {
+    async uptLists() {
       const payload = {
         title: this.title,
       };
