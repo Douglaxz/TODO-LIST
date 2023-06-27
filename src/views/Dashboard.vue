@@ -4,16 +4,78 @@
     :class="geralClassCss"
     style="border-width: 2px; border-color: black; border-style: solid"
   >
-    <router-link to="/Addition">Add</router-link>
-    <div
-      class="d-flex flex-sm-column align-center justify-center justify-sm-space-evenly"
-      :class="formularioClassCss"
-    >
-      <v-card v-for="list in toDoList" :key="list.id">
-        <router-link :to="`/Details/${list.id}`">
+    <div>
+      <v-container class="bg-black">
+        <v-row no-gutters class="d-flex align-center justify-center">
+          <v-col cols="12" sm="2">
+            <v-sheet
+              class="ma-2 pa-2 bg-black d-flex align-center justify-center"
+            >
+              <div
+                class="bg-white d-flex align-center justify-center"
+                style="width: 90px; height: 90px; border-radius: 50%"
+              >
+                <span
+                  class="mdi mdi-list-status text-black"
+                  style="font-size: 90px"
+                ></span></div
+            ></v-sheet>
+          </v-col>
+          <v-col cols="12" sm="6">
+            <v-sheet
+              class="ma-2 pa-2 bg-black text-white d-flex align-center justify-center"
+              ><h3>TODO List</h3></v-sheet
+            >
+          </v-col>
+          <v-col cols="12" sm="4">
+            <v-sheet
+              class="ma-2 pa-2 bg-black d-flex align-center justify-center"
+            >
+              <RouterLink to="/addList"
+                ><v-btn
+                  prepend-icon="mdi mdi-playlist-plus"
+                  variant="outlined"
+                  color="white"
+                >
+                  Adicionar
+                </v-btn></RouterLink
+              >
+              <v-btn
+                prepend-icon="mdi mdi-playlist-plus"
+                variant="outlined"
+                color="white"
+                @click="logout"
+              >
+                Sair
+              </v-btn></v-sheet
+            >
+          </v-col>
+        </v-row>
+      </v-container>
+
+      <div
+        class="cabecalho m-a-0 w-100 d-flex align-center justify-space-around flex-wrap"
+        style="height: 80%; overflow: auto"
+      >
+        <v-card
+          v-for="list in toDoList"
+          :key="list.id"
+          style="width: 250px; height: 120px"
+        >
           <v-card-title>{{ list.title }}</v-card-title>
-        </router-link>
-      </v-card>
+          <v-card-actions>
+            <RouterLink :to="`/viewList/${list.id}`"
+              ><v-btn
+                prepend-icon="mdi mdi-eye-arrow-right"
+                variant="outlined"
+                color="black"
+              >
+                Visualizar
+              </v-btn></RouterLink
+            >
+          </v-card-actions>
+        </v-card>
+      </div>
     </div>
   </div>
 </template>
@@ -35,6 +97,10 @@ export default {
         alert("Algo deu errado");
       }
     },
+    logout() {
+      localStorage.removeItem("token");
+      this.$router.push(`/`);
+    },
   },
   mounted() {
     this.getList();
@@ -53,7 +119,7 @@ export default {
         "h-50": this.$vuetify.display.smAndDown,
         "h-100": this.$vuetify.display.mdAndUp,
         "w-100": this.$vuetify.display.smAndDown,
-        "w-75": this.$vuetify.display.mdAndUp,
+        "w-100": this.$vuetify.display.mdAndUp,
       };
     },
     iconeClassCss() {
@@ -66,3 +132,4 @@ export default {
   },
 };
 </script>
+<style></style>

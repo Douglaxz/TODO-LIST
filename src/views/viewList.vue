@@ -70,47 +70,50 @@
           </v-col>
         </v-row>
       </v-container>
-      <div class="w-100 d-flex align-center justify-space-around flex-wrap">
-        <v-card>
-          <v-sheet width="300" class="mx-auto">
-            <v-form v-model="formValid" fast-fail @submit.prevent>
-              <v-card-title>Atualize o Item da sua lista:</v-card-title>
 
-              <v-text-field
-                v-model="title"
-                label="Título do Item"
-                readonly
-              ></v-text-field>
-
-              <input
-                type="datetime-local"
-                :value="dateToISOString(myDate)"
-                @input="myDate = new Date($event.target.value)"
-                readonly
-              />
-              <v-checkbox
-                v-model="this.done"
-                :label="`Finalizado?`"
-              ></v-checkbox>
-              <v-btn
-                color="grey-darken-2"
-                type="submit"
-                block
-                class="mt-2"
-                @click="handleSubmit"
-                >Atualizar</v-btn
+      <div
+        class="cabecalho m-a-0 w-100 d-flex align-center justify-space-around"
+        style="height: 15%; overflow: auto"
+      >
+        <v-sheet width="300" class="mx-auto">
+          <v-form v-model="formValid" fast-fail @submit.prevent>
+            <v-text-field
+              v-model="title"
+              label="Tarefa"
+              :rules="titleRules"
+              block
+            ></v-text-field>
+          </v-form>
+        </v-sheet>
+      </div>
+      <div
+        class="w-100 d-flex align-center justify-space-around flex-wrap"
+        style="height: 60%; overflow: auto"
+      >
+        <v-card
+          v-for="list in itemList"
+          :key="list.id"
+          variant="outlined"
+          style="width: 250px; height: 165px"
+          class="ma-3 pa-2"
+        >
+          <v-card-title>{{ list.title }}</v-card-title>
+          <v-card-text
+            >Limite: {{ formatDate(list.deadline) }} Finalizado:
+            <span v-if="list.done">Sim</span>
+            <span v-else>Não</span>
+          </v-card-text>
+          <v-card-actions>
+            <RouterLink :to="`/viewIListItem/${list.id}`"
+              ><v-btn
+                prepend-icon="mdi mdi-eye-arrow-right"
+                variant="outlined"
+                color="black"
               >
-
-              <v-btn type="delete" block class="mt-2" @click="deleteItem"
-                >Deletar</v-btn
-              >
-
-              <v-btn type="back" block class="mt-2" :to="`/viewList/${idPai}`"
-                >Voltar</v-btn
-              >
-              <div></div>
-            </v-form>
-          </v-sheet>
+                Visualizar
+              </v-btn></RouterLink
+            >
+          </v-card-actions>
         </v-card>
       </div>
     </div>
@@ -118,81 +121,68 @@
 </template>
 
 <script>
-import { toDoListsItemsApiMixin } from "@/api/toDoItens";
+import { toDoListsApiMixin } from "@/api/toDoLists";
+import moment from "moment";
 
 export default {
-  mixins: [toDoListsItemsApiMixin],
-  data: () => ({
-    title: "",
-    myDate: "",
-    id: null,
-    done: Boolean,
-    idPai: "",
-  }),
+  mixins: [toDoListsApiMixin],
+  data() {
+    const id = this.$route.params.id;
 
-  created() {
-    this.id = this.$route.params.id;
+    return {
+      id: id,
+      title: this.title,
+      itemList: [],
+    };
   },
-
   methods: {
-    dateToISOString(date) {
-      if (!date) return "";
-
-      const adjustedDate = new Date(date);
-      adjustedDate.setHours(adjustedDate.getHours() - 3);
-
-      return adjustedDate.toISOString().slice(0, 16);
+    formatDate(date) {
+      const modifiedDate = moment(date).add(0, "hours");
+      return modifiedDate.format("DD/MM/YYYY HH:mm");
     },
 
-    async getItemLists() {
+    async getItemLists(id) {
       try {
-        console.log(this.id);
-        const { data } = await this.viewListItem(this.id);
+        const { data } = await this.details(id);
+        this.itemList = data.items;
+      } catch (err) {
+        alert("Algo deu errado na hora de puxar os itens da lista.");
+      }
+    },
+    async getLists() {
+      try {
+        const { data } = await this.details(this.id);
         this.title = data.title;
-        this.myDate = new Date(data.deadline);
-        this.done = data.done;
-        this.idPai = data.listId;
       } catch (err) {
-        alert("Algo deu errado na hora de puxar esse item list.");
+        alert("Algo deu errado.");
       }
     },
-
-    async handleSubmit() {
+    async delLists() {
+      try {
+        await this.delete(this.id);
+        alert("Item apagado com sucesso!");
+        this.$router.push("/Dashboard");
+      } catch (err) {
+        alert("Algo deu errado na hora de deletar.");
+      }
+    },
+    async uptLists() {
       const payload = {
-        done: this.done,
+        title: this.title,
       };
-
+      console.log("o meu payload é" + payload);
       try {
-        await this.uptListItem(this.id, payload);
-        alert("Item atualizado com sucesso!");
-        this.$router.push(`/viewList/${this.idPai}`);
+        await this.uptItem(this.id, payload);
+        alert("Item atualizado com sucesso!!");
+        this.$router.push("/Dashboard");
       } catch (err) {
-        const status = err?.response?.status;
-        if (status >= 500 && status < 600) {
-          alert("Ocorreu um erro no servidor! Tente novamente mais tarde.");
-        } else {
-          alert("Algo deu errado. Pedimos desculpas pelo inconveniente.");
-        }
-      }
-    },
-
-    async deleteItem() {
-      try {
-        await this.delListItem(this.id);
-        alert("Item deletado com sucesso!");
-        this.$router.push(`/viewList/${this.idPai}`);
-      } catch (err) {
-        const status = err?.response?.status;
-        if (status >= 500 && status < 600) {
-          alert("Ocorreu um erro no servidor! Tente novamente mais tarde.");
-        } else {
-          alert("Algo deu errado. Pedimos desculpas pelo inconveniente.");
-        }
+        alert("Algo deu errado na hora de atualizar.");
       }
     },
   },
   mounted() {
-    this.getItemLists();
+    this.getLists();
+    this.getItemLists(this.id);
   },
   computed: {
     geralClassCss() {

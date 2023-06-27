@@ -74,10 +74,7 @@ export default {
 
     dateToISOString(date) {
       if (!date) return "";
-
       const adjustedDate = new Date(date);
-      /*adjustedDate.setHours(adjustedDate.getHours() - 3);*/
-
       return adjustedDate.toISOString();
     },
 
