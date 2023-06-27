@@ -19,7 +19,11 @@
               :rules="titleRules"
             ></v-text-field>
 
-            <input type="datetime-local" :value="dateToISOString(myDate)"  />
+            <input
+              type="datetime-local"
+              :value="myDate"
+              @input="handleDateChange"
+            />
 
             <v-btn
               color="grey-darken-2"
@@ -62,19 +66,25 @@ export default {
     this.id = this.$route.params.id;
   },
   methods: {
+    handleDateChange(e) {
+      const { value } = e.target;
+      console.log(value);
+      this.myDate = value;
+    },
+
     dateToISOString(date) {
       if (!date) return "";
 
       const adjustedDate = new Date(date);
-      adjustedDate.setHours(adjustedDate.getHours() - 3);
+      /*adjustedDate.setHours(adjustedDate.getHours() - 3);*/
 
-      return adjustedDate.toISOString().slice(0, 16);
+      return adjustedDate.toISOString();
     },
 
     async handleSubmit() {
       const payload = {
         title: this.title,
-        deadline: this.myDate.toISOString(),
+        deadline: this.dateToISOString(this.myDate),
         listId: this.id,
       };
       console.log(payload);
