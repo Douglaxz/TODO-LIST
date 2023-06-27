@@ -24,6 +24,30 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "dashboard" */ "@/views/Dashboard.vue"),
       },
+      {
+        path: "Addition",
+        name: "Addition",
+        component: () =>
+          import(/* webpackChunkName: "add" */ "@/views/Addition.vue"),
+      },
+      {
+        path: "Details/:id",
+        name: "Details",
+        component: () =>
+          import(/* webpackChunkName: "Details" */ "@/views/Details.vue"),
+      },
+      {
+        path: "addListItens/:id",
+        name: "addListItens",
+        component: () =>
+          import(/* webpackChunkName: "Details" */ "@/views/addListItens.vue"),
+      },
+      {
+        path: "viewIListItem/:id",
+        name: "viewIListItem",
+        component: () =>
+          import(/* webpackChunkName: "Details" */ "@/views/viewIListItem.vue"),
+      },
     ],
   },
 ];
