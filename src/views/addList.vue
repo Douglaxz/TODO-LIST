@@ -4,48 +4,67 @@
     :class="geralClassCss"
     style="border-width: 2px; border-color: black; border-style: solid"
   >
-    <div
-      class="d-flex flex-sm-column align-center justify-center justify-sm-space-evenly"
-      :class="formularioClassCss"
-    >
-      <v-sheet width="300" class="mx-auto">
-        <v-form v-model="formValid" fast-fail @submit.prevent>
-          <v-text-field
-            v-model="title"
-            label="Título"
-            :rules="titleRules"
-          ></v-text-field>
-
+    <div class="w-100">
+      <Cabecalho></Cabecalho>
+      <BarraTitulo :titlepage="'Adicionar Lista de Tarefas'">
+        <template v-slot:slot1>
           <v-btn
+            prepend-icon="mdi mdi-content-save-alert-outline"
             type="submit"
-            block
-            class="mt-2"
+            class="align-self-center"
             :disabled="!formValid"
             @click="handleSubmit"
             >Cadastrar</v-btn
           >
-
+        </template>
+        <template v-slot:slot2>
           <v-btn
-            type="back"
-            block
-            class="mt-2"
+            prepend-icon="mdi mdi-arrow-left"
+            variant="outlined"
+            color="white"
             to="/Dashboard"
-            >Voltar</v-btn
+            class="align-self-center"
           >
-
-        </v-form>
-      </v-sheet>
+            Voltar
+          </v-btn>
+        </template>
+      </BarraTitulo>
+      <Snackbar :snackbar=true :texto="'Adicionar Lista de Tarefas'"></Snackbar>
+      <div
+        class="m-a-0 w-100 d-flex align-center justify-space-around flex-wrap"
+        style="height: 60%; overflow: auto"
+      >
+        <v-sheet width="300" class="mx-auto">
+          <v-form v-model="formValid" fast-fail @submit.prevent>
+            <v-text-field
+              v-model="title"
+              label="Título da Lista"
+              :rules="titleRules"
+            ></v-text-field>
+          </v-form>
+        </v-sheet>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { toDoListsApiMixin } from "@/api/toDoLists";
+import Cabecalho from "@/components/header-intern.vue";
+import BarraTitulo from "@/components/title-bar.vue";
+import Snackbar from "@/components/snackbar.vue";
 
 export default {
+  components: {
+    Cabecalho,
+    BarraTitulo,
+    Snackbar,
+  },
   mixins: [toDoListsApiMixin],
   data: () => ({
     formValid: true,
+    snackbar: false,
+    snackbarTexto: "",
     title: "",
     titleRules: [
       (value) => {
@@ -61,8 +80,9 @@ export default {
       };
       try {
         await this.register(payload);
-        alert("Tarefa criada!");
+
         this.$router.push("/Dashboard");
+        /*this.$emit("alerta");*/
       } catch (err) {
         console.error(err);
         const status = err?.response?.status;

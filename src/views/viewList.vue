@@ -4,78 +4,48 @@
     :class="geralClassCss"
     style="border-width: 2px; border-color: black; border-style: solid"
   >
-    <div>
-      <v-container class="bg-black">
-        <v-row no-gutters class="d-flex align-center justify-center">
-          <v-col cols="12" sm="2">
-            <v-sheet
-              class="ma-2 pa-2 bg-black d-flex align-center justify-center"
-            >
-              <div
-                class="bg-white d-flex align-center justify-center"
-                style="width: 90px; height: 90px; border-radius: 50%"
-              >
-                <span
-                  class="mdi mdi-list-status text-black"
-                  style="font-size: 90px"
-                ></span></div
-            ></v-sheet>
-          </v-col>
-          <v-col cols="12" sm="2">
-            <v-sheet
-              class="ma-2 pa-2 bg-black text-white d-flex align-center justify-center"
-              ><h3>TODO List</h3></v-sheet
-            >
-          </v-col>
-          <v-col cols="12" sm="8">
-            <v-sheet
-              class="ma-2 pa-2 bg-black d-flex align-center justify-center"
-            >
-              <v-btn
-                prepend-icon="mdi mdi-content-save-alert-outline"
-                variant="outlined"
-                color="white"
-                @click="uptLists"
-              >
-                Atualizar
-              </v-btn>
-              <RouterLink :to="`/addListItens/${id}`"
-                ><v-btn
-                  prepend-icon="mdi mdi-playlist-plus"
-                  variant="outlined"
-                  color="white"
-                >
-                  Adicionar Item
-                </v-btn></RouterLink
-              >
-
-              <v-btn
-                prepend-icon="mdi mdi-delete-alert"
-                variant="outlined"
-                color="white"
-                @click="delLists()"
-              >
-                Apagar
-              </v-btn>
-              <router-link to="/dashboard">
-                <v-btn
-                  prepend-icon="mdi mdi-arrow-left"
-                  variant="outlined"
-                  color="white"
-                >
-                  Voltar
-                </v-btn>
-              </router-link>
-            </v-sheet>
-          </v-col>
-        </v-row>
-      </v-container>
-
+    <div class="w-100">
+      <Cabecalho></Cabecalho>
+      <BarraTitulo :titlepage="'Viualizar Lista de Tarefas'">
+        <template v-slot:slot1>
+          <v-btn
+            prepend-icon="mdi mdi-content-save-alert-outline"
+            class="align-self-center"
+            variant="outlined"
+            color="white"
+            @click="uptLists"
+          >
+            Atualizar
+          </v-btn>
+        </template>
+        <template v-slot:slot2>
+          <v-btn
+            prepend-icon="mdi mdi-delete-alert"
+            class="align-self-center"
+            variant="outlined"
+            color="white"
+            @click="delLists()"
+          >
+            Apagar
+          </v-btn>
+        </template>
+        <template v-slot:slot3>
+          <v-btn
+            prepend-icon="mdi mdi-arrow-left"
+            variant="outlined"
+            color="white"
+            to="/Dashboard"
+            class="align-self-center"
+          >
+            Voltar
+          </v-btn>
+        </template>
+      </BarraTitulo>
       <div
-        class="cabecalho m-a-0 w-100 d-flex align-center justify-space-around"
-        style="height: 15%; overflow: auto"
+        class="d-flex align-center justify-space-around"
+        style="overflow: auto"
       >
-        <v-sheet width="300" class="mx-auto">
+        <v-sheet width="300" class="mx-auto mt-7">
           <v-form v-model="formValid" fast-fail @submit.prevent>
             <v-text-field
               v-model="title"
@@ -86,9 +56,23 @@
           </v-form>
         </v-sheet>
       </div>
+      <BarraTitulo :titlepage="'Itens da Lista de Tarefas'">
+        <template v-slot:slot1>
+          <RouterLink :to="`/addListItens/${id}`"
+            ><v-btn
+              class="align-self-center"
+              prepend-icon="mdi mdi-playlist-plus"
+              variant="outlined"
+              color="white"
+            >
+              Adicionar
+            </v-btn></RouterLink
+          >
+        </template>
+      </BarraTitulo>
       <div
         class="w-100 d-flex align-center justify-space-around flex-wrap"
-        style="height: 60%; overflow: auto"
+        style="height: 40%; overflow: auto"
       >
         <v-card
           v-for="list in itemList"
@@ -118,16 +102,33 @@
       </div>
     </div>
   </div>
+  <v-snackbar v-model="snackbar" multi-line>
+    eita
+
+    <template v-slot:actions>
+      <v-btn color="red" variant="text" @click="snackbar = false">
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
 import { toDoListsApiMixin } from "@/api/toDoLists";
+import Cabecalho from "@/components/header-intern.vue";
+import BarraTitulo from "@/components/title-bar.vue";
 import moment from "moment";
 
 export default {
+  components: {
+    Cabecalho,
+    BarraTitulo,
+  },
   mixins: [toDoListsApiMixin],
   data() {
     const id = this.$route.params.id;
+    let snackbar = false;
+    let snackbarTexto ="";
 
     return {
       id: id,
