@@ -69,6 +69,7 @@
 </template>
 
 <script>
+/*teste*/
 import { setupPrivateApi } from "@/api";
 import { authApiMixin } from "@/api/auth";
 export default {
