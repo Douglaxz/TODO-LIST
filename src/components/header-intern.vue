@@ -107,7 +107,7 @@ export default {
   },
   mounted() {
     this.getUserInfo();
-    this.$emit("snackbar", "`Bem vindo ${this.userName} `", "black");
+
   },
 };
 </script>
