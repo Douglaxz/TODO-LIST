@@ -1,139 +1,159 @@
 <template>
-  <div
-    class="d-flex flex-column flex-md-row rounded-xl justify-center rounded-xl overflow-hidden"
-    :class="geralClassCss"
-    style="border-width: 2px; border-color: black; border-style: solid"
-  >
-    <div class="w-100">
-      <Cabecalho></Cabecalho>
-      <BarraTitulo :titlepage="'Viualizar Lista de Tarefas'">
-        <template v-slot:slot1>
-          <v-btn
-            prepend-icon="mdi mdi-content-save-alert-outline"
-            class="align-self-center"
-            variant="outlined"
-            color="white"
-            @click="uptLists"
-          >
-            Atualizar
-          </v-btn>
-        </template>
-        <template v-slot:slot2>
-          <v-btn
-            prepend-icon="mdi mdi-delete-alert"
-            class="align-self-center"
-            variant="outlined"
-            color="white"
-            @click="delLists()"
-          >
-            Apagar
-          </v-btn>
-        </template>
-        <template v-slot:slot3>
-          <v-btn
-            prepend-icon="mdi mdi-arrow-left"
-            variant="outlined"
-            color="white"
-            to="/Dashboard"
-            class="align-self-center"
-          >
-            Voltar
-          </v-btn>
-        </template>
-      </BarraTitulo>
-      <div
-        class="d-flex align-center justify-space-around"
-        style="overflow: auto"
+  <BarraTitulo :titlepage="'Viualizar Tarefas'">
+    <template v-slot:slot1>
+      <v-btn
+        prepend-icon="mdi mdi-content-save-alert-outline"
+        class="align-self-center"
+        variant="outlined"
+        color="white"
+        @click="uptLists"
       >
-        <v-sheet width="300" class="mx-auto mt-7">
-          <v-form v-model="formValid" fast-fail @submit.prevent>
-            <v-text-field
-              v-model="title"
-              label="Tarefa"
-              :rules="titleRules"
-              block
-            ></v-text-field>
-          </v-form>
-        </v-sheet>
-      </div>
-      <BarraTitulo :titlepage="'Itens da Lista de Tarefas'">
-        <template v-slot:slot1>
-          <RouterLink :to="`/addListItens/${id}`"
-            ><v-btn
-              class="align-self-center"
-              prepend-icon="mdi mdi-playlist-plus"
-              variant="outlined"
-              color="white"
-            >
-              Adicionar
-            </v-btn></RouterLink
-          >
-        </template>
-      </BarraTitulo>
-      <div
-        class="w-100 d-flex align-center justify-space-around flex-wrap"
-        style="height: 40%; overflow: auto"
+        <p v-if="$vuetify.display.mdAndUp">Atualizar</p>
+      </v-btn>
+    </template>
+    <template v-slot:slot2>
+      <v-btn
+        prepend-icon="mdi mdi-delete-alert"
+        class="align-self-center"
+        variant="outlined"
+        color="white"
+        @click="showConfirmationDialog"
       >
-        <v-card
-          v-for="list in itemList"
-          :key="list.id"
-          variant="outlined"
-          style="width: 250px; height: 165px"
-          class="ma-3 pa-2"
-        >
-          <v-card-title>{{ list.title }}</v-card-title>
-          <v-card-text
-            >Limite: {{ formatDate(list.deadline) }} Finalizado:
-            <span v-if="list.done">Sim</span>
-            <span v-else>Não</span>
+        <p v-if="$vuetify.display.mdAndUp">Apagar</p>
+      </v-btn>
+      <v-dialog v-model="confirmationDialog" max-width="400px">
+        <v-card>
+          <v-card-title>Confirmação de exclusão</v-card-title>
+          <v-card-text>
+            Tem certeza de que deseja apagar a tarefa?
           </v-card-text>
           <v-card-actions>
+            <v-btn color="black" text @click="delLists">Apagar</v-btn>
+            <v-btn color="gray" text @click="cancelDelete">Cancelar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </template>
+    <template v-slot:slot3>
+      <v-btn
+        prepend-icon="mdi mdi-arrow-left"
+        variant="outlined"
+        color="white"
+        to="/Dashboard"
+        class="align-self-center"
+      >
+        <p v-if="$vuetify.display.mdAndUp">Voltar</p>
+      </v-btn>
+    </template>
+  </BarraTitulo>
+  <div class="d-flex align-center justify-space-around" style="overflow: auto">
+    <v-sheet width="300" class="mx-auto mt-5">
+      <v-form v-model="formValid" fast-fail @submit.prevent>
+        <v-text-field
+          v-model="title"
+          label="Tarefa"
+          :rules="titleRules"
+          block
+        ></v-text-field>
+      </v-form>
+    </v-sheet>
+  </div>
+  <BarraTitulo :titlepage="'Lista de Tarefas'">
+    <template v-slot:slot1>
+      <RouterLink :to="`/addListItens/${id}`"
+        ><v-btn
+          class="align-self-center"
+          prepend-icon="mdi mdi-playlist-plus"
+          variant="outlined"
+          color="white"
+        >
+          <p v-if="$vuetify.display.mdAndUp">Adicionar</p>
+        </v-btn></RouterLink
+      >
+    </template>
+  </BarraTitulo>
+  <div
+    class="ma-0 w-100 d-flex align-center justify-space-around flex-wrap"
+    style="height: 50%; overflow: auto"
+  >
+    <v-card
+      v-for="list in itemList"
+      :key="list.id"
+      variant="outlined"
+      class="ma-2"
+      width="290"
+      height="180"
+      style="overflow: hidden"
+    >
+      <v-card-item>
+        <div>
+          <div class="text-overline mb-1 d-flex justify-space-between">
+            <v-chip class="ma-2" color="red" text-color="white">
+              Importante !</v-chip
+            >
             <RouterLink :to="`/viewIListItem/${list.id}`"
               ><v-btn
                 prepend-icon="mdi mdi-eye-arrow-right"
                 variant="outlined"
                 color="black"
               >
-                Visualizar
-              </v-btn></RouterLink
+              </v-btn
+            ></RouterLink>
+          </div>
+          <div
+            class="text-h7 mb-2 w-100"
+            style="height: 37px; overflow: hidden"
+          >
+            {{ list.title }}
+          </div>
+          <div class="text-caption">
+            <v-chip class="ma-2" color="gray" text-color="white">
+              <span class="mdi mdi-calendar-check-outline"></span>
+              {{ formatDate(list.deadline) }}</v-chip
             >
-          </v-card-actions>
-        </v-card>
-      </div>
-    </div>
+            <v-chip
+              v-if="list.done"
+              class="ma-2"
+              color="green"
+              text-color="white"
+            >
+              <span><span class="mdi mdi-check-circle-outline"></span></span>
+            </v-chip>
+          </div>
+        </div>
+      </v-card-item>
+    </v-card>
   </div>
-  <v-snackbar v-model="snackbar" multi-line>
-    eita
-
-    <template v-slot:actions>
-      <v-btn color="red" variant="text" @click="snackbar = false">
-        Close
-      </v-btn>
-    </template>
-  </v-snackbar>
 </template>
 
 <script>
 import { toDoListsApiMixin } from "@/api/toDoLists";
-import Cabecalho from "@/components/header-intern.vue";
 import BarraTitulo from "@/components/title-bar.vue";
 import moment from "moment";
 
 export default {
   components: {
-    Cabecalho,
     BarraTitulo,
   },
+  props: {},
   mixins: [toDoListsApiMixin],
+
   data() {
     const id = this.$route.params.id;
-    let snackbar = false;
-    let snackbarTexto ="";
 
     return {
       id: id,
       title: this.title,
+      formValid: false,
+      confirmationDialog: false,
+
       itemList: [],
+      titleRules: [
+        (value) => {
+          if (!value) return "Por favor, preencha o campo Título";
+          return true;
+        },
+      ],
     };
   },
   methods: {
@@ -142,12 +162,24 @@ export default {
       return modifiedDate.format("DD/MM/YYYY HH:mm");
     },
 
+    showConfirmationDialog() {
+      this.confirmationDialog = true;
+    },
+
+    cancelDelete() {
+      this.confirmationDialog = false;
+    },
+
     async getItemLists(id) {
       try {
         const { data } = await this.details(id);
         this.itemList = data.items;
       } catch (err) {
-        alert("Algo deu errado na hora de puxar os itens da lista.");
+        this.$emit(
+          "snackbar",
+          "Algo deu errado na obtenção dos itens da lista",
+          "red"
+        );
       }
     },
     async getLists() {
@@ -155,29 +187,31 @@ export default {
         const { data } = await this.details(this.id);
         this.title = data.title;
       } catch (err) {
-        alert("Algo deu errado.");
+        this.$emit(
+          "snackbar",
+          "Não foi possível pegar a lista de tarefas",
+          "red"
+        );
       }
     },
     async delLists() {
       try {
         await this.delete(this.id);
-        alert("Item apagado com sucesso!");
         this.$router.push("/Dashboard");
+        this.$emit("snackbar", "Tarefa excluída com sucesso", "green");
       } catch (err) {
-        alert("Algo deu errado na hora de deletar.");
+        this.$emit("snackbar", "Não foi possível deletar a tarefa", "red");
       }
     },
     async uptLists() {
       const payload = {
         title: this.title,
       };
-      console.log("o meu payload é" + payload);
       try {
         await this.uptItem(this.id, payload);
-        alert("Item atualizado com sucesso!!");
-        this.$router.push("/Dashboard");
+        this.$emit("snackbar", "Tarefa atualizada com sucesso", "green");
       } catch (err) {
-        alert("Algo deu errado na hora de atualizar.");
+        this.$emit("snackbar", "Algo deu errado na atualização", "red");
       }
     },
   },
@@ -185,30 +219,6 @@ export default {
     this.getLists();
     this.getItemLists(this.id);
   },
-  computed: {
-    geralClassCss() {
-      return {
-        "w-100": this.$vuetify.display.smAndDown,
-        "w-50": this.$vuetify.display.mdAndUp,
-        "h-100": this.$vuetify.display.smAndDown,
-        "h-75": this.$vuetify.display.mdAndUp,
-      };
-    },
-    formularioClassCss() {
-      return {
-        "h-50": this.$vuetify.display.smAndDown,
-        "h-100": this.$vuetify.display.mdAndUp,
-        "w-100": this.$vuetify.display.smAndDown,
-        "w-100": this.$vuetify.display.mdAndUp,
-      };
-    },
-    iconeClassCss() {
-      return {
-        "h-50": this.$vuetify.display.smAndDown,
-        "h-100": this.$vuetify.display.mdAndUp,
-        "w-100": this.$vuetify.display.smAndDown,
-      };
-    },
-  },
+  updated() {},
 };
 </script>

@@ -2,7 +2,7 @@
   <v-app>
     <default-view />
   </v-app>
-</template> 
+</template>
 
 <script setup>
 import DefaultView from "./View.vue";

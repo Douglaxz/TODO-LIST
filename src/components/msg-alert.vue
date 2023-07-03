@@ -33,5 +33,8 @@ export default {
       this.alert = !this.alert;
     },
   },
+  updated() {
+    this.open = this.$props.alert;
+  },
 };
 </script>

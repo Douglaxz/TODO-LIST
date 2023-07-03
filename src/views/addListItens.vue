@@ -1,59 +1,50 @@
 <template>
-  <div
-    class="d-flex flex-column flex-md-row rounded-xl justify-center rounded-xl overflow-hidden"
-    :class="geralClassCss"
-    style="border-width: 2px; border-color: black; border-style: solid"
-  >
-    <div class="w-100">
-      <Cabecalho></Cabecalho>
-      <BarraTitulo :titlepage="'Adicionar Items'">
-        <template v-slot:slot1>
-          <v-btn
-            prepend-icon="mdi mdi-content-save-alert-outline"
-            type="submit"
-            class="align-self-center"
-            @click="handleSubmit"
-            >Cadastrar</v-btn
-          >
-        </template>
-        <template v-slot:slot2>
-          <v-btn
-            prepend-icon="mdi mdi-arrow-left"
-            variant="outlined"
-            color="white"
-            :to="`/viewList/${id}`"
-            class="align-self-center"
-          >
-            Voltar
-          </v-btn>
-        </template>
-      </BarraTitulo>
-      <div
-        class="m-a-0 w-100 d-flex align-center justify-space-around flex-wrap"
-        style="height: 60%; overflow: auto"
+  <BarraTitulo :titlepage="'Adicionar Items'">
+    <template v-slot:slot1>
+      <v-btn
+        prepend-icon="mdi mdi-content-save-alert-outline"
+        type="submit"
+        class="align-self-center"
+        @click="handleSubmit"
+        ><p v-if="$vuetify.display.mdAndUp">Adicionar</p></v-btn
       >
-        <v-card>
-          <v-sheet width="300" class="mx-auto">
-            <v-form v-model="formValid" fast-fail @submit.prevent>
-              <v-text-field
-                v-model="title"
-                label="Título do Item"
-                :rules="titleRules"
-              ></v-text-field>
-              <label for="datetime" style="color: gray"
-                >Prazo para finalização:</label
-              >
-              <input
-                type="datetime-local"
-                :value="myDate"
-                @input="handleDateChange"
-                style="background-color: #f6f6f6; height: 40px; width: 100%"
-              />
-            </v-form>
-          </v-sheet>
-        </v-card>
-      </div>
-    </div>
+    </template>
+    <template v-slot:slot2>
+      <v-btn
+        prepend-icon="mdi mdi-arrow-left"
+        variant="outlined"
+        color="white"
+        :to="`/viewList/${id}`"
+        class="align-self-center"
+      >
+        <p v-if="$vuetify.display.mdAndUp">Voltar</p>
+      </v-btn>
+    </template>
+  </BarraTitulo>
+  <div
+    class="m-a-0 w-100 d-flex align-center justify-space-around flex-wrap"
+    style="height: 60%; min-height: 510px; overflow: auto"
+  >
+    <v-card>
+      <v-sheet width="300" class="mx-auto">
+        <v-form v-model="formValid" fast-fail @submit.prevent>
+          <v-text-field
+            v-model="title"
+            label="Título do Item"
+            :rules="titleRules"
+          ></v-text-field>
+          <label for="datetime" style="color: gray"
+            >Prazo para finalização:</label
+          >
+          <input
+            type="datetime-local"
+            :value="myDate"
+            @input="handleDateChange"
+            style="background-color: #f6f6f6; height: 40px; width: 100%"
+          />
+        </v-form>
+      </v-sheet>
+    </v-card>
   </div>
 </template>
 
@@ -73,6 +64,7 @@ export default {
   mixins: [toDoListsItemsApiMixin],
   data: () => ({
     title: "",
+    formValid: false,
     titleRules: [
       (value) => {
         if (!/^.+$/.test(value)) return "Campo Obrigatório";
@@ -81,7 +73,7 @@ export default {
         return true;
       },
     ],
-    myDate: new Date(),
+    myDate: new Date().toISOString().slice(0, 16),
     id: null,
   }),
   created() {
@@ -110,8 +102,8 @@ export default {
 
       try {
         await this.addListItem(payload);
-        alert("Item da lista criado com sucesso!");
         this.$router.push(`/viewList/${this.id}`);
+        this.$emit("snackbar", "Item de tarefa criado com sucesso", "green");
       } catch (err) {
         const status = err?.response?.status;
         if (status >= 500 && status < 600) {
@@ -120,31 +112,6 @@ export default {
           alert("Algo deu errado. Pedimos desculpas pelo inconveniente.");
         }
       }
-    },
-  },
-  computed: {
-    geralClassCss() {
-      return {
-        "w-100": this.$vuetify.display.smAndDown,
-        "w-50": this.$vuetify.display.mdAndUp,
-        "h-100": this.$vuetify.display.smAndDown,
-        "h-75": this.$vuetify.display.mdAndUp,
-      };
-    },
-    formularioClassCss() {
-      return {
-        "h-50": this.$vuetify.display.smAndDown,
-        "h-100": this.$vuetify.display.mdAndUp,
-        "w-100": this.$vuetify.display.smAndDown,
-        "w-75": this.$vuetify.display.mdAndUp,
-      };
-    },
-    iconeClassCss() {
-      return {
-        "h-50": this.$vuetify.display.smAndDown,
-        "h-100": this.$vuetify.display.mdAndUp,
-        "w-100": this.$vuetify.display.smAndDown,
-      };
     },
   },
 };

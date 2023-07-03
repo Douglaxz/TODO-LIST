@@ -4,13 +4,12 @@ import { createRouter, createWebHistory } from "vue-router";
 const routes = [
   {
     path: "/",
-    component: () => import("@/layouts/default/Default.vue"),
+    component: () => import("@/layouts/auth/Default.vue"),
     children: [
       {
         path: "",
         name: "Home",
-        component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/Home.vue"),
+        component: () => import("@/views/Home.vue"),
       },
       {
         path: "Cadastro",
@@ -18,6 +17,12 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "cadastro" */ "@/views/Cadastro.vue"),
       },
+    ],
+  },
+  {
+    path: "/",
+    component: () => import("@/layouts/default/Default.vue"),
+    children: [
       {
         path: "Dashboard",
         name: "Dashboard",

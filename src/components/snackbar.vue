@@ -1,5 +1,5 @@
 <template>
-  <v-snackbar v-model="snackbar" multi-line>
+  <v-snackbar v-model="snackbar" multi-line color="{{color}}" rounded="pill">
     {{ texto }}
 
     <template v-slot:actions>
@@ -14,6 +14,7 @@ export default {
   props: {
     texto: String,
     snackbar: Boolean,
+    color: String,
   },
 };
 </script>

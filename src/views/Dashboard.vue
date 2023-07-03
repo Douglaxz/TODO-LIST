@@ -1,41 +1,46 @@
 <template>
-  <div
-    class="d-flex flex-column flex-md-row rounded-xl justify-center rounded-xl overflow-hidden"
-    :class="geralClassCss"
-    style="border-width: 2px; border-color: black; border-style: solid"
-  >
-    <div class="w-100">
-      <Cabecalho></Cabecalho>
-      <BarraTitulo :titlepage="'Lista de Tarefas'">
-        <template v-slot:slot1>
-          <RouterLink to="/addList"
-            ><v-btn
-              prepend-icon="mdi mdi-playlist-plus"
-              variant="outlined"
-              color="white"
-            >
-              Adicionar
-            </v-btn></RouterLink
-          >
-        </template>
-      </BarraTitulo>
-      <Alerta
-        :titlepage="'Tarefa Criada com sucesso'"
-        :type="'success'"
-        :alert="created"
-        :resetCreated="resetCreated"
-      ></Alerta>
-      <div
-        class="m-a-0 w-100 d-flex align-center justify-space-around flex-wrap"
-        style="height: 60%; overflow: auto"
-      >
-        <v-card
-          v-for="list in toDoList"
-          :key="list.id"
-          style="width: 250px; height: 120px"
+  <BarraTitulo :titlepage="'Lista de Tarefas'">
+    <template v-slot:slot1>
+      <RouterLink to="/addList"
+        ><v-btn
+          prepend-icon="mdi mdi-playlist-plus"
+          variant="outlined"
+          color="white"
+          class="mt-0"
         >
-          <v-card-title>{{ list.title }}</v-card-title>
-          <v-card-actions>
+          <p v-if="$vuetify.display.mdAndUp">Adicionar</p>
+        </v-btn></RouterLink
+      >
+    </template>
+  </BarraTitulo>
+
+  <div
+    class="ma-0 w-100 d-flex align-center justify-space-around flex-wrap"
+    style="overflow: auto"
+  >
+    <v-card
+      v-for="list in toDoList"
+      :key="list.id"
+      variant="outlined"
+      class="mx-auto mb-2"
+      width="290"
+      height="180"
+      style="overflow: hidden"
+    >
+      <v-card-item>
+        <div>
+          <div class="text-overline mb-1 d-flex justify-space-between">
+            <v-chip class="ma-2" color="gray" text-color="white">
+              ToDo !</v-chip
+            >
+          </div>
+          <div
+            class="text-h7 mb-2 w-100"
+            style="height: 37px; overflow: hidden"
+          >
+            {{ list.title }}
+          </div>
+          <div class="text-caption">
             <RouterLink :to="`/viewList/${list.id}`"
               ><v-btn
                 prepend-icon="mdi mdi-eye-arrow-right"
@@ -45,26 +50,22 @@
                 Visualizar
               </v-btn></RouterLink
             >
-          </v-card-actions>
-        </v-card>
-      </div>
-    </div>
+          </div>
+        </div>
+      </v-card-item>
+    </v-card>
   </div>
 </template>
 <script>
 import { toDoListsApiMixin } from "@/api/toDoLists";
-import Cabecalho from "@/components/header-intern.vue";
 import BarraTitulo from "@/components/title-bar.vue";
-import Alerta from "@/components/msg-alert.vue";
 export default {
   components: {
-    Cabecalho,
     BarraTitulo,
-    Alerta,
   },
   props: {
     created: Boolean,
-    resetCreated: Function,
+    deleted: Boolean,
   },
   mixins: [toDoListsApiMixin],
   data() {
@@ -75,6 +76,7 @@ export default {
   methods: {
     async getList() {
       try {
+        console.log("entrou no get list");
         const { data } = await this.list();
         this.toDoList = data;
       } catch (err) {
@@ -84,34 +86,6 @@ export default {
   },
   mounted() {
     this.getList();
-  },
-  unmounted() {
-    this.resetCreated();
-  },
-  computed: {
-    geralClassCss() {
-      return {
-        "w-100": this.$vuetify.display.smAndDown,
-        "w-50": this.$vuetify.display.mdAndUp,
-        "h-100": this.$vuetify.display.smAndDown,
-        "h-75": this.$vuetify.display.mdAndUp,
-      };
-    },
-    formularioClassCss() {
-      return {
-        "h-50": this.$vuetify.display.smAndDown,
-        "h-100": this.$vuetify.display.mdAndUp,
-        "w-100": this.$vuetify.display.smAndDown,
-        "w-100": this.$vuetify.display.mdAndUp,
-      };
-    },
-    iconeClassCss() {
-      return {
-        "h-50": this.$vuetify.display.smAndDown,
-        "h-100": this.$vuetify.display.mdAndUp,
-        "w-100": this.$vuetify.display.smAndDown,
-      };
-    },
   },
 };
 </script>
