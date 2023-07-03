@@ -69,6 +69,7 @@
 </template>
 
 <script>
+/*teste*/
 import { setupPrivateApi } from "@/api";
 import { authApiMixin } from "@/api/auth";
 export default {
@@ -76,6 +77,7 @@ export default {
   data: () => ({
     formValid: true,
     email: "",
+    show1: false,
     emailRules: [
       function (value) {
         const emailRegex =
@@ -91,6 +93,7 @@ export default {
       required: (value) => !!value || "Senha necessária.",
     },
   }),
+
   methods: {
     async handleSubmit() {
       const payload = {
@@ -105,6 +108,7 @@ export default {
         setupPrivateApi(access_token);
         this.$router.push("/Dashboard");
       } catch (err) {
+        alert("deu erro");
         console.error(err);
         const status = err?.response?.status;
 

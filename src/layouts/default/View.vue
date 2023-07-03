@@ -1,23 +1,86 @@
 <template>
   <v-main class="d-flex justify-center align-center ma-3">
-    <transition name="slide-x-transition" mode="out-in">
-      <router-view />
-    </transition>
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="timeout"
+      :color="snackbarcolor"
+      rounded="pill"
+    >
+      {{ snackbarMessage }}
+
+      <template v-slot:actions>
+        <v-btn color="white" variant="text" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <div
+      class="d-flex flex-column flex-md-row rounded-xl rounded-xl overflow-hidden"
+      :class="geralClassCss"
+      style="
+        border-width: 2px;
+        border-color: black;
+        border-style: solid;
+        height: 100%;
+      "
+    >
+      <div class="w-100">
+        <Cabecalho></Cabecalho>
+
+        <router-view @snackbar="snackbarMsg" />
+      </div>
+    </div>
   </v-main>
 </template>
 
-<script setup>
-//
+<script>
+import Cabecalho from "@/components/header-intern.vue";
+export default {
+  components: {
+    Cabecalho,
+  },
+  data() {
+    return {
+      snackbar: false,
+      snackbarMessage: "",
+      timeout: 3000,
+      snackbarcolor: "",
+    };
+  },
+  methods: {
+    snackbarMsg(msg, color) {
+      console.log(color);
+      this.snackbar = true;
+      this.snackbarMessage = msg;
+      this.snackbarcolor = color;
+    },
+  },
+  computed: {
+    geralClassCss() {
+      return {
+        "w-100": this.$vuetify.display.smAndDown,
+        "w-50": this.$vuetify.display.mdAndUp,
+        "h-75": this.$vuetify.display.smAndDown,
+        "h-75": this.$vuetify.display.mdAndUp,
+      };
+    },
+    formularioClassCss() {
+      return {
+        "h-50": this.$vuetify.display.smAndDown,
+        "h-100": this.$vuetify.display.mdAndUp,
+        "w-100": this.$vuetify.display.smAndDown,
+        "w-100": this.$vuetify.display.mdAndUp,
+      };
+    },
+    iconeClassCss() {
+      return {
+        "h-50": this.$vuetify.display.smAndDown,
+        "h-100": this.$vuetify.display.mdAndUp,
+        "w-100": this.$vuetify.display.smAndDown,
+      };
+    },
+  },
+};
 </script>
 
-<style>
-.slide-x-transition-enter-active,
-.slide-x-transition-leave-active {
-  transition: transform 0.3s ease-out;
-}
-
-.slide-x-transition-enter,
-.slide-x-transition-leave-to {
-  transform: translateX(100%);
-}
-</style>
+<style></style>

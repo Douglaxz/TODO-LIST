@@ -1,59 +1,83 @@
 <template>
-  <div
-    class="d-flex flex-column flex-md-row rounded-xl justify-center rounded-xl overflow-hidden"
-    :class="geralClassCss"
-    style="border-width: 2px; border-color: black; border-style: solid"
-  >
-    <div
-      class="d-flex flex-sm-column align-center justify-center justify-sm-space-evenly"
-      :class="formularioClassCss"
+  <BarraTitulo :titlepage="'Visualizar Item'">
+    <template v-slot:slot1>
+      <v-btn
+        prepend-icon="mdi mdi-playlist-plus"
+        variant="outlined"
+        color="white"
+        @click="handleSubmit"
+      >
+        <p v-if="$vuetify.display.mdAndUp">Atualizar</p>
+      </v-btn>
+    </template>
+    <template v-slot:slot2>
+      <v-btn
+        prepend-icon="mdi mdi-delete-alert"
+        variant="outlined"
+        color="white"
+        @click="showConfirmationDialog"
+        class="align-self-center"
+      >
+        <p v-if="$vuetify.display.mdAndUp">Apagar</p>
+      </v-btn>
+      <v-dialog v-model="confirmationDialog" max-width="400px">
+        <v-card>
+          <v-card-title>Confirmação de exclusão</v-card-title>
+          <v-card-text>
+            Tem certeza de que deseja apagar o item de tarefa?
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="black" text @click="deleteItem">Apagar</v-btn>
+            <v-btn color="gray" text @click="cancelDelete">Cancelar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </template>
+    <template v-slot:slot3>
+      <v-btn
+        prepend-icon="mdi mdi-arrow-left"
+        variant="outlined"
+        color="white"
+        :to="`/viewList/${idPai}`"
+        class="align-self-center"
+      >
+        <p v-if="$vuetify.display.mdAndUp">Voltar</p>
+      </v-btn>
+    </template>
+  </BarraTitulo>
+  <div class="w-100">
+    <v-sheet
+      width="300"
+      height="200"
+      class="mx-auto mt-16"
+      style="border: 1px solid black"
     >
-      <v-card>
-        <v-sheet width="300" class="mx-auto">
-          <v-form v-model="formValid" fast-fail @submit.prevent>
-            <v-card-title>Atualize o Item da sua lista:</v-card-title>
+      <v-form v-model="formValid" fast-fail @submit.prevent>
+        <v-text-field v-model="title" label="Título do Item"></v-text-field>
+        <label for="datetime" style="color: gray"
+          >Prazo para finalização:</label
+        >
+        <input
+          type="datetime-local"
+          :value="dateToISOString(myDate)"
+          @input="handleDateChange"
+          style="background-color: #f6f6f6; height: 40px; width: 100%"
+        />
 
-            <v-text-field
-              v-model="title"
-              label="Título do Item"
-              readonly
-            ></v-text-field>
-
-            <input
-              type="datetime-local"
-              :value="dateToISOString(myDate)"
-              @input="myDate = new Date($event.target.value)"
-              readonly
-            />
-            <v-checkbox v-model="this.done" :label="`Finalizado?`"></v-checkbox>
-            <v-btn
-              color="grey-darken-2"
-              type="submit"
-              block
-              class="mt-2"
-              @click="handleSubmit"
-              >Atualizar</v-btn
-            >
-
-            <v-btn type="delete" block class="mt-2" @click="deleteItem"
-              >Deletar</v-btn
-            >
-
-            <v-btn type="back" block class="mt-2" :to="`/Details/${idPai}`"
-              >Voltar</v-btn
-            >
-            <div></div>
-          </v-form>
-        </v-sheet>
-      </v-card>
-    </div>
+        <v-checkbox v-model="this.done" :label="`Finalizado?`"></v-checkbox>
+      </v-form>
+    </v-sheet>
   </div>
 </template>
 
 <script>
 import { toDoListsItemsApiMixin } from "@/api/toDoItens";
+import BarraTitulo from "@/components/title-bar.vue";
 
 export default {
+  components: {
+    BarraTitulo,
+  },
   mixins: [toDoListsItemsApiMixin],
   data: () => ({
     title: "",
@@ -61,25 +85,42 @@ export default {
     id: null,
     done: Boolean,
     idPai: "",
+    formValid: false,
+    confirmationDialog: false,
   }),
+  props: {
+    updatedItem: Boolean,
+    resetUpdatedItem: Function,
+    showLocalAlert: Boolean,
+    localAlertMsg: String,
+  },
 
   created() {
     this.id = this.$route.params.id;
   },
 
   methods: {
+    handleDateChange(e) {
+      const { value } = e.target;
+      this.myDate = value;
+    },
     dateToISOString(date) {
       if (!date) return "";
-
       const adjustedDate = new Date(date);
       adjustedDate.setHours(adjustedDate.getHours() - 3);
-
       return adjustedDate.toISOString().slice(0, 16);
+    },
+
+    showConfirmationDialog() {
+      this.confirmationDialog = true;
+    },
+
+    cancelDelete() {
+      this.confirmationDialog = false;
     },
 
     async getItemLists() {
       try {
-        console.log(this.id);
         const { data } = await this.viewListItem(this.id);
         this.title = data.title;
         this.myDate = new Date(data.deadline);
@@ -91,14 +132,19 @@ export default {
     },
 
     async handleSubmit() {
+      const dataCorrigida = new Date(this.myDate);
       const payload = {
+        title: this.title,
+        deadline: dataCorrigida.toISOString(),
         done: this.done,
       };
-
       try {
         await this.uptListItem(this.id, payload);
-        alert("Item atualizado com sucesso!");
-        this.$router.push(`/Details/${this.idPai}`);
+        this.$emit(
+          "snackbar",
+          "Item de tarefa atualizado com sucesso",
+          "green"
+        );
       } catch (err) {
         const status = err?.response?.status;
         if (status >= 500 && status < 600) {
@@ -112,14 +158,22 @@ export default {
     async deleteItem() {
       try {
         await this.delListItem(this.id);
-        alert("Item deletado com sucesso!");
-        this.$router.push(`/Details/${this.idPai}`);
+        this.$router.push(`/viewList/${this.idPai}`);
+        this.$emit("snackbar", "Item de tarefa excluída com sucesso", "green");
       } catch (err) {
         const status = err?.response?.status;
         if (status >= 500 && status < 600) {
-          alert("Ocorreu um erro no servidor! Tente novamente mais tarde.");
+          this.$emit(
+            "snackbar",
+            "Ocorreu um erro no servidor! Tente novamente mais tarde.",
+            "red"
+          );
         } else {
-          alert("Algo deu errado. Pedimos desculpas pelo inconveniente.");
+          this.$emit(
+            "snackbar",
+            "Algo deu errado. Pedimos desculpas pelo inconveniente.",
+            "red"
+          );
         }
       }
     },

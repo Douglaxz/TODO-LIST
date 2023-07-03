@@ -1,25 +1,72 @@
 <template>
+  <BarraTitulo :titlepage="'Lista de Tarefas'">
+    <template v-slot:slot1>
+      <RouterLink to="/addList"
+        ><v-btn
+          prepend-icon="mdi mdi-playlist-plus"
+          variant="outlined"
+          color="white"
+          class="mt-0"
+        >
+          <p v-if="$vuetify.display.mdAndUp">Adicionar</p>
+        </v-btn></RouterLink
+      >
+    </template>
+  </BarraTitulo>
+
   <div
-    class="d-flex flex-column flex-md-row rounded-xl justify-center rounded-xl overflow-hidden"
-    :class="geralClassCss"
-    style="border-width: 2px; border-color: black; border-style: solid"
+    class="ma-0 w-100 d-flex align-center justify-space-around flex-wrap"
+    style="overflow: auto"
   >
-    <router-link to="/Addition">Add</router-link>
-    <div
-      class="d-flex flex-sm-column align-center justify-center justify-sm-space-evenly"
-      :class="formularioClassCss"
+    <v-card
+      v-for="list in toDoList"
+      :key="list.id"
+      variant="outlined"
+      class="mx-auto mb-2"
+      width="290"
+      height="180"
+      style="overflow: hidden"
     >
-      <v-card v-for="list in toDoList" :key="list.id">
-        <router-link :to="`/Details/${list.id}`">
-          <v-card-title>{{ list.title }}</v-card-title>
-        </router-link>
-      </v-card>
-    </div>
+      <v-card-item>
+        <div>
+          <div class="text-overline mb-1 d-flex justify-space-between">
+            <v-chip class="ma-2" color="gray" text-color="white">
+              ToDo !</v-chip
+            >
+          </div>
+          <div
+            class="text-h7 mb-2 w-100"
+            style="height: 37px; overflow: hidden"
+          >
+            {{ list.title }}
+          </div>
+          <div class="text-caption">
+            <RouterLink :to="`/viewList/${list.id}`"
+              ><v-btn
+                prepend-icon="mdi mdi-eye-arrow-right"
+                variant="outlined"
+                color="black"
+              >
+                Visualizar
+              </v-btn></RouterLink
+            >
+          </div>
+        </div>
+      </v-card-item>
+    </v-card>
   </div>
 </template>
 <script>
 import { toDoListsApiMixin } from "@/api/toDoLists";
+import BarraTitulo from "@/components/title-bar.vue";
 export default {
+  components: {
+    BarraTitulo,
+  },
+  props: {
+    created: Boolean,
+    deleted: Boolean,
+  },
   mixins: [toDoListsApiMixin],
   data() {
     return {
@@ -29,6 +76,7 @@ export default {
   methods: {
     async getList() {
       try {
+        console.log("entrou no get list");
         const { data } = await this.list();
         this.toDoList = data;
       } catch (err) {
@@ -39,30 +87,6 @@ export default {
   mounted() {
     this.getList();
   },
-  computed: {
-    geralClassCss() {
-      return {
-        "w-100": this.$vuetify.display.smAndDown,
-        "w-50": this.$vuetify.display.mdAndUp,
-        "h-100": this.$vuetify.display.smAndDown,
-        "h-75": this.$vuetify.display.mdAndUp,
-      };
-    },
-    formularioClassCss() {
-      return {
-        "h-50": this.$vuetify.display.smAndDown,
-        "h-100": this.$vuetify.display.mdAndUp,
-        "w-100": this.$vuetify.display.smAndDown,
-        "w-75": this.$vuetify.display.mdAndUp,
-      };
-    },
-    iconeClassCss() {
-      return {
-        "h-50": this.$vuetify.display.smAndDown,
-        "h-100": this.$vuetify.display.mdAndUp,
-        "w-100": this.$vuetify.display.smAndDown,
-      };
-    },
-  },
 };
 </script>
+<style></style>

@@ -4,13 +4,12 @@ import { createRouter, createWebHistory } from "vue-router";
 const routes = [
   {
     path: "/",
-    component: () => import("@/layouts/default/Default.vue"),
+    component: () => import("@/layouts/auth/Default.vue"),
     children: [
       {
         path: "",
         name: "Home",
-        component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/Home.vue"),
+        component: () => import("@/views/Home.vue"),
       },
       {
         path: "Cadastro",
@@ -18,6 +17,12 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "cadastro" */ "@/views/Cadastro.vue"),
       },
+    ],
+  },
+  {
+    path: "/",
+    component: () => import("@/layouts/default/Default.vue"),
+    children: [
       {
         path: "Dashboard",
         name: "Dashboard",
@@ -25,16 +30,16 @@ const routes = [
           import(/* webpackChunkName: "dashboard" */ "@/views/Dashboard.vue"),
       },
       {
-        path: "Addition",
-        name: "Addition",
+        path: "addList",
+        name: "addList",
         component: () =>
-          import(/* webpackChunkName: "add" */ "@/views/Addition.vue"),
+          import(/* webpackChunkName: "add" */ "@/views/addList.vue"),
       },
       {
-        path: "Details/:id",
-        name: "Details",
+        path: "viewList/:id",
+        name: "viewList",
         component: () =>
-          import(/* webpackChunkName: "Details" */ "@/views/Details.vue"),
+          import(/* webpackChunkName: "Details" */ "@/views/viewList.vue"),
       },
       {
         path: "addListItens/:id",
