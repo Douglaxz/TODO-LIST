@@ -86,7 +86,6 @@ export default {
   },
   mounted() {
     this.getList();
-    this.$emit("snackbar", "Bem vindo ao TODO List", "black");
   },
 };
 </script>
