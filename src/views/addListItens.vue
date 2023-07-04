@@ -1,5 +1,5 @@
 <template>
-  <BarraTitulo :titlepage="'Adicionar Items'">
+  <BarraTitulo :titlepage="'Adicionar Item'">
     <template v-slot:slot1>
       <v-btn
         prepend-icon="mdi mdi-content-save-alert-outline"
@@ -34,7 +34,7 @@
             :rules="titleRules"
           ></v-text-field>
           <label for="datetime" style="color: gray"
-            >Prazo para finalização:</label
+            >Prazo para finalização deste item:</label
           >
           <input
             type="datetime-local"

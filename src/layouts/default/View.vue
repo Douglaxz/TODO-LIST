@@ -14,6 +14,7 @@
         </v-btn>
       </template>
     </v-snackbar>
+
     <div
       class="d-flex flex-column flex-md-row rounded-xl rounded-xl overflow-hidden"
       :class="geralClassCss"
@@ -26,8 +27,8 @@
     >
       <div class="w-100">
         <Cabecalho></Cabecalho>
-
-        <router-view @snackbar="snackbarMsg" />
+        <spiner :show="showSpinner"></spiner>
+        <router-view @snackbar="snackbarMsg" @spinner="toggleSpinner" />
       </div>
     </div>
   </v-main>
@@ -35,9 +36,12 @@
 
 <script>
 import Cabecalho from "@/components/header-intern.vue";
+import spiner from "@/components/spiner.vue";
+
 export default {
   components: {
     Cabecalho,
+    spiner,
   },
   data() {
     return {
@@ -45,6 +49,7 @@ export default {
       snackbarMessage: "",
       timeout: 3000,
       snackbarcolor: "",
+      showSpinner: false,
     };
   },
   methods: {
@@ -53,6 +58,9 @@ export default {
       this.snackbar = true;
       this.snackbarMessage = msg;
       this.snackbarcolor = color;
+    },
+    toggleSpinner() {
+      this.showSpinner = !this.showSpinner;
     },
   },
   computed: {
