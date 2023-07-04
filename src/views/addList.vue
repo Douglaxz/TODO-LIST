@@ -30,7 +30,7 @@
       <v-form v-model="formValid" fast-fail @submit.prevent>
         <v-text-field
           v-model="title"
-          label="Título da Lista"
+          label="Título da tarefa"
           :rules="titleRules"
         ></v-text-field>
       </v-form>

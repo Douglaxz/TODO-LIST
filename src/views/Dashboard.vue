@@ -1,5 +1,5 @@
 <template>
-  <BarraTitulo :titlepage="'Lista de Tarefas'">
+  <BarraTitulo :titlepage="'Tarefas'">
     <template v-slot:slot1>
       <RouterLink to="/addList"
         ><v-btn
@@ -40,10 +40,10 @@
           >
             {{ list.title }}
           </div>
-          <div class="text-caption">
+          <div class="d-flex align-center justify-center">
             <RouterLink :to="`/viewList/${list.id}`"
               ><v-btn
-                prepend-icon="mdi mdi-eye-arrow-right"
+                prepend-icon="mdi mdi-open-in-new"
                 variant="outlined"
                 color="black"
               >
@@ -76,9 +76,10 @@ export default {
   methods: {
     async getList() {
       try {
-        console.log("entrou no get list");
+        this.$emit("spinner");
         const { data } = await this.list();
         this.toDoList = data;
+        this.$emit("spinner");
       } catch (err) {
         alert("Algo deu errado");
       }

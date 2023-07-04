@@ -58,7 +58,7 @@
       </v-form>
     </v-sheet>
   </div>
-  <BarraTitulo :titlepage="'Lista de Tarefas'">
+  <BarraTitulo :titlepage="'Itens'">
     <template v-slot:slot1>
       <RouterLink :to="`/addListItens/${id}`"
         ><v-btn
@@ -82,7 +82,7 @@
       variant="outlined"
       class="ma-2"
       width="290"
-      height="180"
+      height="200"
       style="overflow: hidden"
     >
       <v-card-item>
@@ -91,14 +91,6 @@
             <v-chip class="ma-2" color="red" text-color="white">
               Importante !</v-chip
             >
-            <RouterLink :to="`/viewIListItem/${list.id}`"
-              ><v-btn
-                prepend-icon="mdi mdi-eye-arrow-right"
-                variant="outlined"
-                color="black"
-              >
-              </v-btn
-            ></RouterLink>
           </div>
           <div
             class="text-h7 mb-2 w-100"
@@ -120,6 +112,18 @@
               <span><span class="mdi mdi-check-circle-outline"></span></span>
             </v-chip>
           </div>
+        </div>
+        <div class="d-flex align-center justify-center">
+          <RouterLink :to="`/viewIListItem/${list.id}`"
+            ><v-btn
+              class="align-self-center"
+              prepend-icon="mdi mdi-open-in-new"
+              variant="outlined"
+              color="black"
+            >
+              <p v-if="$vuetify.display.mdAndUp">Visualizar</p>
+            </v-btn></RouterLink
+          >
         </div>
       </v-card-item>
     </v-card>
@@ -146,7 +150,7 @@ export default {
       title: this.title,
       formValid: false,
       confirmationDialog: false,
-
+      datalimite: "",
       itemList: [],
       titleRules: [
         (value) => {
@@ -159,6 +163,8 @@ export default {
   methods: {
     formatDate(date) {
       const modifiedDate = moment(date).add(0, "hours");
+      this.datalimite = date;
+
       return modifiedDate.format("DD/MM/YYYY HH:mm");
     },
 
@@ -172,8 +178,10 @@ export default {
 
     async getItemLists(id) {
       try {
+        this.$emit("spinner");
         const { data } = await this.details(id);
         this.itemList = data.items;
+        this.$emit("spinner");
       } catch (err) {
         this.$emit(
           "snackbar",
@@ -184,8 +192,10 @@ export default {
     },
     async getLists() {
       try {
+        this.$emit("spinner");
         const { data } = await this.details(this.id);
         this.title = data.title;
+        this.$emit("spinner");
       } catch (err) {
         this.$emit(
           "snackbar",
@@ -196,7 +206,9 @@ export default {
     },
     async delLists() {
       try {
+        this.$emit("spinner");
         await this.delete(this.id);
+        this.$emit("spinner");
         this.$router.push("/Dashboard");
         this.$emit("snackbar", "Tarefa excluída com sucesso", "green");
       } catch (err) {
@@ -208,7 +220,9 @@ export default {
         title: this.title,
       };
       try {
+        this.$emit("spinner");
         await this.uptItem(this.id, payload);
+        this.$emit("spinner");
         this.$emit("snackbar", "Tarefa atualizada com sucesso", "green");
       } catch (err) {
         this.$emit("snackbar", "Algo deu errado na atualização", "red");
@@ -219,6 +233,7 @@ export default {
     this.getLists();
     this.getItemLists(this.id);
   },
+  computed: {},
   updated() {},
 };
 </script>

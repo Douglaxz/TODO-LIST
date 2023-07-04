@@ -46,16 +46,11 @@
     </template>
   </BarraTitulo>
   <div class="w-100">
-    <v-sheet
-      width="300"
-      height="200"
-      class="mx-auto mt-16"
-      style="border: 1px solid black"
-    >
+    <v-sheet width="300" height="200" class="mx-auto mt-16">
       <v-form v-model="formValid" fast-fail @submit.prevent>
         <v-text-field v-model="title" label="Título do Item"></v-text-field>
         <label for="datetime" style="color: gray"
-          >Prazo para finalização:</label
+          >Prazo para finalização deste item:</label
         >
         <input
           type="datetime-local"
